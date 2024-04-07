@@ -1,0 +1,180 @@
+basePath: /
+definitions:
+  main.APIError:
+    properties:
+      error:
+        type: string
+    type: object
+  main.Car:
+    properties:
+      mark:
+        type: string
+      model:
+        type: string
+      owner:
+        $ref: '#/definitions/main.People'
+      regNum:
+        type: string
+      year:
+        type: integer
+    type: object
+  main.People:
+    properties:
+      name:
+        type: string
+      patronymic:
+        type: string
+      surname:
+        type: string
+    type: object
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server Petstore server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: u
+paths:
+  /cars/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a car by ID
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ID of the deleted car
+          schema:
+            type: integer
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/main.APIError'
+        "404":
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/main.APIError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/main.APIError'
+      summary: DeleteCarHandler
+      tags:
+      - cars
+    put:
+      consumes:
+      - application/json
+      description: Update a car by ID
+      parameters:
+      - description: Car ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ID of the updated car
+          schema:
+            type: integer
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/main.APIError'
+        "404":
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/main.APIError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/main.APIError'
+      summary: UpdateCarHandler
+      tags:
+      - cars
+  /cars/add:
+    post:
+      consumes:
+      - application/json
+      description: Add one or more cars
+      parameters:
+      - description: Registration numbers of cars (comma-separated)
+        in: body
+        name: regNums
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successful response with an array of added cars
+          schema:
+            items:
+              $ref: '#/definitions/main.Car'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/main.APIError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/main.APIError'
+      summary: AddCarHandler
+      tags:
+      - cars
+  /cars/get:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of cars with pagination support
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Number of items per page
+        in: query
+        name: page_size
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful response with an array of cars
+          schema:
+            items:
+              $ref: '#/definitions/main.Car'
+            type: array
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/main.APIError'
+        "404":
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/main.APIError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/main.APIError'
+      summary: GetCarsHandler
+      tags:
+      - cars
+swagger: "2.0"

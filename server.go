@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
-	"os"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	_ "github.com/smnov/cartest/docs"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 type Server struct {
@@ -15,13 +17,11 @@ type Server struct {
 	logger *slog.Logger
 }
 
-func NewServer(addr string) *Server {
-	l := slog.New(slog.NewTextHandler(os.Stdout, nil))
-	db := MockDB{}
+func NewServer(addr string, db Database, logger *slog.Logger) *Server {
 	return &Server{
 		addr:   addr,
 		db:     db,
-		logger: l,
+		logger: logger,
 	}
 }
 
@@ -41,10 +41,21 @@ func HTTPHandleFunc(f APIFunc) http.HandlerFunc {
 
 func (s *Server) Start() {
 	router := mux.NewRouter()
-	router.HandleFunc("/get/{id}", HTTPHandleFunc(s.GetHandler))
-	router.HandleFunc("/delete/{id}", HTTPHandleFunc(s.GetHandler))
-	router.HandleFunc("/edit/{id}", HTTPHandleFunc(s.GetHandler))
-	router.HandleFunc("/add", HTTPHandleFunc(s.GetHandler))
-	s.logger.Info("Server started at port ", s.addr)
-	http.ListenAndServe(s.addr, router)
+	// init swagger
+	router.PathPrefix("/swagger").Handler(httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8080/swagger/doc.json"), // The url pointing to API definition
+		httpSwagger.DeepLinking(true),
+		httpSwagger.DocExpansion("none"),
+		httpSwagger.DomID("swagger-ui"),
+	)).Methods(http.MethodGet)
+	// init routes
+	router.HandleFunc("/cars/get", HTTPHandleFunc(s.GetCarsHandler)).Methods("GET")
+	router.HandleFunc("/cars/delete/{id}", HTTPHandleFunc(s.DeleteCarHandler)).Methods("DELETE")
+	router.HandleFunc("/cars/update/{id}", HTTPHandleFunc(s.UpdateCarHandler)).Methods("PATCH")
+	router.HandleFunc("/cars/add", HTTPHandleFunc(s.AddCarHandler)).Methods("POST")
+	s.logger.Info("Starting server...", "port", s.addr)
+	err := http.ListenAndServe(s.addr, handlers.CORS()(router))
+	if err != nil {
+		s.logger.Error("Server failed to start", "error", err)
+	}
 }
