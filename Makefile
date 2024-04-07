@@ -1,7 +1,9 @@
-BIN_DIR := bin
 OUTPUT := $(BIN_DIR)/carbuild
 POSTGRES_USER := root
 POSTGRES_PASSWORD := password
+
+start:
+	postgresinit createdb migrateup run
 
 build:
 	go build -o $(OUTPUT) .
@@ -25,3 +27,4 @@ migrateup:
 migratedown:
 		migrate -path db/migrations -database "postgresql://root:password@localhost:5433/cardb?sslmode=disable" -verbose down
 
+.PHONY: run, build, start, createdb, postgresinit, postgres, migrateup, migratedown
