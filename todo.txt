@@ -1,2 +1,0 @@
-.env in makefile
-test methods

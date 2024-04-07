@@ -1,3 +1,0 @@
-export PATH=$(go env GOPATH)/bin:$PATH // for swag init
-
-migrate create -ext sql -dir db/migrations -seq create_cars_table
