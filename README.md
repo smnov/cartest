@@ -6,5 +6,6 @@ swag init
 
 Для запуска сервиса:
 
-go mod tidy
-make start
+make createdb
+make migrateup
+make run

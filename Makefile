@@ -1,30 +1,21 @@
-OUTPUT := $(BIN_DIR)/carbuild
-POSTGRES_USER := root
-POSTGRES_PASSWORD := password
+include .env
+export
 
-start:
-	postgresinit createdb migrateup run
+OUTPUT := carbuild
+
+createdb:
+	psql -U $(USERNAME) -c "CREATE DATABASE $(DB_NAME);"
 
 build:
 	go build -o $(OUTPUT) .
 
-run:
-	go build -o $(OUTPUT) .
-	./bin/carbuild
-
-createdb:
-	docker exec -it cardb psql -U $(POSTGRES_USER) -c "CREATE DATABASE cardb;"
-
-postgresinit:
-	docker run --name cardb -p 5433 -e POSTGRES_USER=$(POSTGRES_USER) -e POSTGRES_PASSWORD=$(POSTGRES_PASSWORD) -d postgres:15-alpine
-
-postgres:
-	docker exec -it cardb psql
+run: build
+	./$(OUTPUT)
 
 migrateup:
-	migrate -path db/migrations -database "postgresql://root:password@localhost:5433/cardb?sslmode=disable" -verbose up
+	migrate -path db/migrations -database "postgresql://$(USERNAME):$(PASSWORD)@$(HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable" -verbose up
 
 migratedown:
-		migrate -path db/migrations -database "postgresql://root:password@localhost:5433/cardb?sslmode=disable" -verbose down
+	migrate -path db/migrations -database "postgresql://$(USERNAME):$(PASSWORD)@$(HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable" -verbose down
 
-.PHONY: run, build, start, createdb, postgresinit, postgres, migrateup, migratedown
+.PHONY: run build start createdb migrateup migratedown

@@ -70,7 +70,6 @@ func (s *PostgresStore) DeleteCarByID(id int) error {
 }
 
 func (s *PostgresStore) UpdateCarByID(id int, car *Car) error {
-	// Подготавливаем запрос для обновления информации об автомобиле
 	query := `
         UPDATE cars
         SET reg_num = $1, mark = $2, model = $3, year = $4, owner_name = $5, owner_surname = $6, owner_patronymic = $7
@@ -95,7 +94,6 @@ func (s *PostgresStore) UpdateCarByID(id int, car *Car) error {
 }
 
 func (s *PostgresStore) AddCars(regNums []string) error {
-	// Создаем транзакцию для добавления автомобилей в базу данных
 	tx, err := s.db.Begin()
 	if err != nil {
 		return err
@@ -108,14 +106,12 @@ func (s *PostgresStore) AddCars(regNums []string) error {
 		tx.Commit()
 	}()
 
-	// Подготавливаем запрос для добавления автомобилей
 	stmt, err := tx.Prepare("INSERT INTO cars (reg_num) VALUES ($1)")
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
 
-	// Добавляем каждый автомобиль в базу данных
 	for _, regNum := range regNums {
 		_, err := stmt.Exec(regNum)
 		if err != nil {
