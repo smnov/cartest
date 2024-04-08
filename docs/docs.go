@@ -144,19 +144,19 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Марка автомобиля для фильтрации",
+                        "description": "Car make",
                         "name": "make",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Модель автомобиля для фильтрации",
+                        "description": "Car model",
                         "name": "model",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "Год выпуска автомобиля для фильтрации",
+                        "description": "Car year",
                         "name": "year",
                         "in": "query"
                     }

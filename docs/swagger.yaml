@@ -110,15 +110,15 @@ paths:
         name: page_size
         required: true
         type: integer
-      - description: Марка автомобиля для фильтрации
+      - description: Car make
         in: query
         name: make
         type: string
-      - description: Модель автомобиля для фильтрации
+      - description: Car model
         in: query
         name: model
         type: string
-      - description: Год выпуска автомобиля для фильтрации
+      - description: Car year
         in: query
         name: year
         type: integer
