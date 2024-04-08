@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	_ "github.com/lib/pq"
 )
 
 type Database interface {
-	GetCars(page int, pageSize int) ([]*Car, error)
+	GetCars(page int, pageSize int, make, model string, year int) ([]*Car, error)
 	DeleteCarByID(id int) error
 	UpdateCarByID(id int, car *Car) error
 	AddCars(regNums []string) error
@@ -37,15 +38,60 @@ func NewPostgresStore() (*PostgresStore, error) {
 	if err := db.Ping(); err != nil {
 		return nil, err
 	}
-	return &PostgresStore{
-		db: db,
-	}, nil
+	store := &PostgresStore{db: db}
+	err = initTables(store)
+	if err != nil {
+		return nil, err
+	}
+	return store, nil
 }
 
-func (s *PostgresStore) GetCars(page int, pageSize int) ([]*Car, error) {
+func initTables(s *PostgresStore) error {
+	peopleQuery := `CREATE TABLE IF NOT EXISTS people (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    surname VARCHAR(255) NOT NULL,
+    patronymic VARCHAR(255)
+);`
+	_, err := s.db.Query(peopleQuery)
+	if err != nil {
+		return err
+	}
+	carQuery := `CREATE TABLE IF NOT EXISTS cars (
+    id SERIAL PRIMARY KEY,
+    regNum VARCHAR(20) NOT NULL,
+    mark VARCHAR(255) NOT NULL,
+    model VARCHAR(255) NOT NULL,
+    year INTEGER,
+    owner_id INTEGER REFERENCES people(id)
+);
+  `
+	_, err = s.db.Query(carQuery)
+	return err
+}
+
+func (s *PostgresStore) GetCars(page int, pageSize int, make string, model string, year int) ([]*Car, error) {
 	var cars []*Car
 	offset := (page - 1) * pageSize
-	query := fmt.Sprintf("SELECT * FROM cars LIMIT %d OFFSET %d", pageSize, offset)
+
+	query := "SELECT * FROM cars"
+
+	conditions := []string{}
+	if make != "" {
+		conditions = append(conditions, fmt.Sprintf("make = '%s'", make))
+	}
+	if model != "" {
+		conditions = append(conditions, fmt.Sprintf("model = '%s'", model))
+	}
+	if year != 0 {
+		conditions = append(conditions, fmt.Sprintf("year = %d", year))
+	}
+	if len(conditions) > 0 {
+		query += " WHERE " + strings.Join(conditions, " AND ")
+	}
+
+	query += fmt.Sprintf(" LIMIT %d OFFSET %d", pageSize, offset)
+
 	rows, err := s.db.Query(query)
 	if err != nil {
 		return nil, err

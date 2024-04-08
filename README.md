@@ -1,11 +1,6 @@
 Для того, чтобы работал swagger:
 
-
+go install github.com/swaggo/swag/cmd/swag@latest
 swag init
 
 
-Для запуска сервиса:
-
-make createdb
-make migrateup
-make run

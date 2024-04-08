@@ -24,6 +24,9 @@ type APIError struct {
 // @Produce      json
 // @Param        page query int true "Page number"
 // @Param        page_size query int true "Number of items per page"
+// @Param make query string false "Car make"
+// @Param model query string false "Car model"
+// @Param year query int false "Car year"
 // @Success      200 {array} Car "Successful response with an array of cars"
 // @Failure      400 {object} APIError "Bad request"
 // @Failure      404 {object} APIError "Resource not found"
@@ -42,12 +45,26 @@ func (s *Server) GetCarsHandler(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
+
+	make := r.URL.Query().Get("make")
+	model := r.URL.Query().Get("model")
+	yearStr := r.URL.Query().Get("year")
+	var year int
+	if yearStr != "" {
+		year, err = strconv.Atoi(yearStr)
+		if err != nil {
+			return err
+		}
+	}
+
 	s.logger.Info("Handling GetCars request")
-	cars, err := s.db.GetCars(page, pageSize)
+
+	cars, err := s.db.GetCars(page, pageSize, make, model, year)
 	if err != nil {
 		s.logger.Debug("error while getting cars", "error", err.Error())
 		return err
 	}
+
 	return WriteJSON(w, 200, cars)
 }
 

@@ -9,16 +9,7 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
+        "contact": {},
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -73,6 +64,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/cars/delete/{id}": {
+            "delete": {
+                "description": "Delete a car by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cars"
+                ],
+                "summary": "DeleteCarHandler",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Car ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ID of the deleted car",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/main.APIError"
+                        }
+                    },
+                    "404": {
+                        "description": "Resource not found",
+                        "schema": {
+                            "$ref": "#/definitions/main.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/main.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/cars/get": {
             "get": {
                 "description": "Get a list of cars with pagination support",
@@ -100,6 +141,24 @@ const docTemplate = `{
                         "name": "page_size",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Марка автомобиля для фильтрации",
+                        "name": "make",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Модель автомобиля для фильтрации",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Год выпуска автомобиля для фильтрации",
+                        "name": "year",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -133,7 +192,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/cars/{id}": {
+        "/cars/update/{id}": {
             "put": {
                 "description": "Update a car by ID",
                 "consumes": [
@@ -158,54 +217,6 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "ID of the updated car",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/main.APIError"
-                        }
-                    },
-                    "404": {
-                        "description": "Resource not found",
-                        "schema": {
-                            "$ref": "#/definitions/main.APIError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/main.APIError"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete a car by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "cars"
-                ],
-                "summary": "DeleteCarHandler",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Car ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ID of the deleted car",
                         "schema": {
                             "type": "integer"
                         }
@@ -280,12 +291,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "u",
+	Version:          "",
 	Host:             "",
-	BasePath:         "/",
+	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Swagger Example API",
-	Description:      "This is a sample server Petstore server.",
+	Title:            "",
+	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

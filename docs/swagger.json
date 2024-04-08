@@ -1,21 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is a sample server Petstore server.",
-        "title": "Swagger Example API",
-        "termsOfService": "http://swagger.io/terms/",
-        "contact": {
-            "name": "API Support",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
-        },
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
-        "version": "u"
+        "contact": {}
     },
-    "basePath": "/",
     "paths": {
         "/cars/add": {
             "post": {
@@ -66,6 +53,56 @@
                 }
             }
         },
+        "/cars/delete/{id}": {
+            "delete": {
+                "description": "Delete a car by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "cars"
+                ],
+                "summary": "DeleteCarHandler",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Car ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ID of the deleted car",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/main.APIError"
+                        }
+                    },
+                    "404": {
+                        "description": "Resource not found",
+                        "schema": {
+                            "$ref": "#/definitions/main.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/main.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/cars/get": {
             "get": {
                 "description": "Get a list of cars with pagination support",
@@ -93,6 +130,24 @@
                         "name": "page_size",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Марка автомобиля для фильтрации",
+                        "name": "make",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Модель автомобиля для фильтрации",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Год выпуска автомобиля для фильтрации",
+                        "name": "year",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -126,7 +181,7 @@
                 }
             }
         },
-        "/cars/{id}": {
+        "/cars/update/{id}": {
             "put": {
                 "description": "Update a car by ID",
                 "consumes": [
@@ -151,54 +206,6 @@
                 "responses": {
                     "200": {
                         "description": "ID of the updated car",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request",
-                        "schema": {
-                            "$ref": "#/definitions/main.APIError"
-                        }
-                    },
-                    "404": {
-                        "description": "Resource not found",
-                        "schema": {
-                            "$ref": "#/definitions/main.APIError"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/main.APIError"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete a car by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "cars"
-                ],
-                "summary": "DeleteCarHandler",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Car ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ID of the deleted car",
                         "schema": {
                             "type": "integer"
                         }
